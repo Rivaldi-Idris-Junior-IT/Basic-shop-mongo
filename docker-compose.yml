@@ -1,0 +1,40 @@
+version: "3.7"
+services: 
+  backend_pos:
+    image: "aldifarzum/basicshop-backend:v1.0.0"
+    restart: always
+    volumes:    
+      - ./backend/logfile:/backend/logfile
+    deploy:
+      mode: replicated
+      replicas: 3
+      resources:
+        limits:
+          cpus: '1'
+          memory: 50M
+    networks:
+      - testnetwork 
+    environment:        
+        NODE_ENV: development
+        MONGO_COMPASS_DBNAME: basicshop
+        JWT_TOKEN: aldi1234
+        PORT: 5000
+        SERVICEPORT: 5000
+  frontend_pos:    
+    image: "aldifarzum/basicshop-frontend:v1.0.0"
+    ports:
+      - 80:80
+    networks:
+      - testnetwork
+    depends_on:
+      - backend_pos
+    environment:
+     -  REACT_APP_URL=http://127.0.0.1:5000/backend/     
+    volumes: 
+      - ./frontend:/dist/public
+networks:
+  testnetwork :
+      
+volumes:
+  pgdata:
+  pgadmin-data:
